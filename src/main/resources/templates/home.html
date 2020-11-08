@@ -12,7 +12,12 @@
         <div class="container">
             <div id="logoutDiv">
                 <form action="#" method="POST" th:action="@{/logout}">
-                    <button id="logout-button" type="submit" class="btn btn-secondary float-right">Logout</button>
+                    <div class="d-flex flex-row justify-content-end">
+                        <div class="d-flex flex-row align-items-center mr-2">
+                            <span class="font-weight-bold" th:text="|Welcome ${userName} !|"/></span>
+                        </div>
+                        <button id="logout-button" type="submit" class="btn btn-secondary">Logout</button>
+                    </div>
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">
@@ -94,11 +99,19 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button id="addNoteButton" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button id="addNoteButton" style="margin: 0.25em;" type="button"
+                                class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
-
                         <div class="table-responsive">
+                            <div class="alert alert-success fill-parent" id="notes-success-msg" th:if="${notesSuccessMessage}">
+                                <h1 class="display-5">Success</h1>
+                                <span th:text="${notesSuccessMessage}"></span>
+                            </div>
+                            <div class="alert alert-danger fill-parent" id="notes-error-msg" th:if="${notesErrorMessage}">
+                                <h1 class="display-5">Error</h1>
+                                <span th:text="${notesErrorMessage}"></span>
+                            </div>
                             <table class="table table-striped" id="notesTable">
                                 <thead>
                                     <tr>
@@ -161,6 +174,14 @@
                         </button>
 
                         <div class="table-responsive">
+                            <div class="alert alert-success fill-parent" id="credentials-success-msg" th:if="${credentialsSuccessMessage}">
+                                <h1 class="display-5">Success</h1>
+                                <span th:text="${credentialsSuccessMessage}"></span>
+                            </div>
+                            <div class="alert alert-danger fill-parent" id="credentials-error-msg" th:if="${credentialsErrorMessage}">
+                                <h1 class="display-5">Error</h1>
+                                <span th:text="${credentialsErrorMessage}"></span>
+                            </div>
                             <table class="table table-striped" th:object="${credentials}" id="credentialTable">
                                 <thead>
                                     <tr>

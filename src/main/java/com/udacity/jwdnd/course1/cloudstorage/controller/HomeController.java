@@ -29,6 +29,7 @@ public class HomeController {
     public String getHomePage(Authentication authentication,  Model model){
         var userId = this.userService.getUser(authentication.getName()).getUserId();
 
+        model.addAttribute("userName", authentication.getName());
         model.addAttribute("uploadedFiles", this.storageService.getAllUserFiles(userId));
         model.addAttribute("notes", this.notesService.getAllUserNotes(userId));
         model.addAttribute("credentials", this.credentialsService.getAllUserCredentials(userId));

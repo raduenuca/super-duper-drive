@@ -24,8 +24,18 @@ public class CredentialsController {
 
     @PostMapping
     public String upsertCredential(Authentication authentication, CredentialForm credentialForm, RedirectAttributes redirectAttributes){
-        var userId = this.userService.getUser(authentication.getName()).getUserId();
-        this.credentialsService.upsertUserCredential(userId, credentialForm);
+        try {
+            var userId = this.userService.getUser(authentication.getName()).getUserId();
+            this.credentialsService.upsertUserCredential(userId, credentialForm);
+
+            redirectAttributes.addFlashAttribute(
+                    "credentialsSuccessMessage",
+                    String.format("Credential %s successfully!", credentialForm.getCredentialId() == null ? "created" : "edited"));
+        } catch(Exception ex){
+            redirectAttributes.addFlashAttribute(
+                    "credentialsErrorMessage",
+                    String.format("Error %s credential!", credentialForm.getCredentialId() == null ? "creating" : "updating"));
+        }
 
         redirectAttributes.addFlashAttribute("currentTab", "credentials");
         return "redirect:/";
@@ -33,8 +43,14 @@ public class CredentialsController {
 
     @PostMapping("/delete")
     public String deleteNote(Authentication authentication, @RequestParam("credentialId") Integer credentialId, RedirectAttributes redirectAttributes){
-        var userId = this.userService.getUser(authentication.getName()).getUserId();
-        this.credentialsService.deleteUserCredentialById(userId, credentialId);
+        try {
+            var userId = this.userService.getUser(authentication.getName()).getUserId();
+            this.credentialsService.deleteUserCredentialById(userId, credentialId);
+
+            redirectAttributes.addFlashAttribute("credentialsSuccessMessage", "Credential deleted successfully!");
+        } catch(Exception ex) {
+            redirectAttributes.addFlashAttribute("credentialsErrorMessage", "Error deleting credential!");
+        }
 
         redirectAttributes.addFlashAttribute("currentTab", "credentials");
         return "redirect:/";

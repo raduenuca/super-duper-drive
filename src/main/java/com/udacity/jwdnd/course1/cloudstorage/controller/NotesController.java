@@ -1,6 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
 import com.udacity.jwdnd.course1.cloudstorage.services.NotesService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
@@ -26,9 +25,18 @@ public class NotesController {
     public String upsertNote(Authentication authentication,
                              RedirectAttributes redirectAttributes,
                              NoteForm noteForm) {
-        var userId = this.userService.getUser(authentication.getName()).getUserId();
+        try {
+            var userId = this.userService.getUser(authentication.getName()).getUserId();
+            this.notesService.upsertUserNote(userId, noteForm);
 
-        this.notesService.upsertUserNote(userId, noteForm);
+            redirectAttributes.addFlashAttribute(
+                    "notesSuccessMessage",
+                    String.format("Note %s successfully!", noteForm.getNoteId() == null ? "created" : "edited"));
+        } catch(Exception ex){
+            redirectAttributes.addFlashAttribute(
+                    "notesErrorMessage",
+                    String.format("Error %s note!", noteForm.getNoteId() == null ? "creating" : "updating"));
+        }
 
         redirectAttributes.addFlashAttribute("currentTab", "notes");
         return "redirect:/";
@@ -38,8 +46,14 @@ public class NotesController {
     public String deleteNote(Authentication authentication,
                              RedirectAttributes redirectAttributes,
                              @RequestParam("noteId") Integer noteId){
-        var userId = this.userService.getUser(authentication.getName()).getUserId();
-        this.notesService.deleteUserNoteById(userId, noteId);
+        try {
+            var userId = this.userService.getUser(authentication.getName()).getUserId();
+            this.notesService.deleteUserNoteById(userId, noteId);
+
+            redirectAttributes.addFlashAttribute("notesSuccessMessage", "Note deleted successfully!");
+        } catch(Exception ex) {
+            redirectAttributes.addFlashAttribute("notesErrorMessage", "Error deleting note!");
+        }
 
         redirectAttributes.addFlashAttribute("currentTab", "notes");
         return "redirect:/";
